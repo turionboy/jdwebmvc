@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 
 	<name>jdmvc</name>
-	<url>https://github.com/liubingsmile/jdmvc</url>
+	<url>http://maven.apache.org</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

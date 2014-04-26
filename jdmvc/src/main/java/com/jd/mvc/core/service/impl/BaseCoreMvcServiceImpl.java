@@ -29,7 +29,7 @@ import com.jd.mvc.core.util.SpringContextUtil;
 import com.jd.mvc.core.util.StringUtil;
 /**
  * 
- * @author liubing1@jd.com
+ * @author liubingsmile@gmail.com
  *
  */
 public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{

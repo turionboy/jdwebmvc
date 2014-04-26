@@ -2,7 +2,7 @@
 package com.jd.mvc.cache.face;
 /**
  * LRU 接口
- * @author liubing1@jd.com
+ * @author liubingsmile@gmail.com
  *
  */
 public interface ICache<KEY,VALUE> {

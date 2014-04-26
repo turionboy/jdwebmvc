@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 /**
  * 拦截器
- * @author liubing1@jd.com
+ * @author liubingsmile@gmail.com
  *
  */
 public interface DefaultInterceptot {

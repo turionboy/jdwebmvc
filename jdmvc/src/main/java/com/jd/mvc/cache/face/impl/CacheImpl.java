@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.jd.mvc.cache.face.ICache;
 /**
  * LRU CACHE 实现
- * @author liubing1@jd.com
+ * @author liubingsmile@gmail.com
  *
  * @param <KEY>
  * @param <VALUE>

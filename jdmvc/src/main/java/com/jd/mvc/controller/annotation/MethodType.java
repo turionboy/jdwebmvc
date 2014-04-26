@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 /**
  * 
- * @author liubing1@jd.com
+ * @author liubingsmile@gmail.com
  *
  */
 @Target({ElementType.METHOD})

@@ -2,7 +2,7 @@
 * @Title: IBaseCoreMvcService.java 
 * @Package com.jd.mvc.core.service 
 * @Description: TODO(用一句话描述该文件做什么) 
-* @author liubing1@jd.com	   
+* @author liubingsmile@gmail.com	   
 * @date 2014-4-25 下午11:45:41 
 * @version V1.0   
 */ 
@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.jd.mvc.common.RouteInfo;
 
 /**
- * @author liubing1@jd.com
+ * @author liubingsmile@gmail.com
  *
  */
 public interface IBaseCoreMvcService {

@@ -6,6 +6,8 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import com.jd.mvc.core.interceptot.DefaultInterceptotImpl;
 /**
  * 
  * <p>Copyright: All Rights Reserved</p>  
@@ -18,7 +20,7 @@ import java.lang.annotation.Target;
 public @interface Route{
 	public String value() default "";
 	
-	public Class<?> cls() default Object.class;//拦截类
+	public Class<?> cls() default DefaultInterceptotImpl.class;//拦截类
 	
 	
 }

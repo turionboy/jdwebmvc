@@ -5,7 +5,7 @@ package com.jd.mvc.controller.action;
 
 /**
  * 
- * @author liubing1@jd.com
+ * @author liubingsmile@gmail.com
  *
  */
 public abstract class BaseController{
