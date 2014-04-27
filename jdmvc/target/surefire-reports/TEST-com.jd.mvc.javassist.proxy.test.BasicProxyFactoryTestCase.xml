@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="0.028" errors="0" skipped="0" tests="14" name="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase">
+<testsuite failures="0" time="0.067" errors="0" skipped="0" tests="14" name="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="D:\jdk\jre\bin"/>
@@ -25,7 +25,7 @@
     <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."/>
     <property name="user.variant" value=""/>
     <property name="os.name" value="Windows 7"/>
-    <property name="classworlds.conf" value="D:\work\workplace\.metadata\.plugins\org.eclipse.m2e.launching\launches\m2conf1126987769440871974.tmp"/>
+    <property name="classworlds.conf" value="D:\work\workplace\.metadata\.plugins\org.eclipse.m2e.launching\launches\m2conf7378643861981961664.tmp"/>
     <property name="sun.jnu.encoding" value="GBK"/>
     <property name="java.library.path" value="D:\jdk\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;D:/jdk/bin/../jre/bin/server;D:/jdk/bin/../jre/bin;D:/jdk/bin/../jre/lib/amd64;C:\Program Files\Common Files\Microsoft Shared\Windows Live;C:\Program Files (x86)\Common Files\Microsoft Shared\Windows Live;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;D:\jdk\bin;D:\eclipse\eclipse-jee-juno-SR2-win32-x86_64\eclipse;;."/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
@@ -60,18 +60,18 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase time="0" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testProxyFactoryHandlerSetter"/>
-  <testcase time="0.005" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testCannotProxyNonStaticInnerClass"/>
+  <testcase time="0.024" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testProxyFactoryHandlerSetter"/>
+  <testcase time="0" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testCannotProxyNonStaticInnerClass"/>
   <testcase time="0.001" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testCanProxyStaticInnerClass"/>
   <testcase time="0" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testCannotProxyFinalClass"/>
-  <testcase time="0.002" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testPackageProtectedMethodProxied"/>
-  <testcase time="0.002" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testCheckedException"/>
+  <testcase time="0" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testPackageProtectedMethodProxied"/>
+  <testcase time="0" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testCheckedException"/>
   <testcase time="0" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testStaticMethodNotProxied"/>
-  <testcase time="0.001" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testFinalMethodNotProxied"/>
+  <testcase time="0" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testFinalMethodNotProxied"/>
   <testcase time="0" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testPrivateMethodNotProxied"/>
-  <testcase time="0.001" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testNoArgsVoidMethod"/>
-  <testcase time="0.001" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testUncheckedException"/>
-  <testcase time="0.003" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testOverriddenMethod"/>
+  <testcase time="0" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testNoArgsVoidMethod"/>
+  <testcase time="0" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testUncheckedException"/>
+  <testcase time="0" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testOverriddenMethod"/>
   <testcase time="0" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testProtectedMethodProxied"/>
-  <testcase time="0.001" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testSeveralParametersWithDouhleAndLong"/>
+  <testcase time="0.002" classname="com.jd.mvc.javassist.proxy.test.BasicProxyFactoryTestCase" name="testSeveralParametersWithDouhleAndLong"/>
 </testsuite>

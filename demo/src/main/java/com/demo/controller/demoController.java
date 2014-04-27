@@ -3,6 +3,7 @@ package com.demo.controller;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.demo.interceptot.demoInterceptot;
 import com.jd.mvc.controller.action.BaseController;
 import com.jd.mvc.controller.annotation.MethodType;
@@ -84,5 +85,19 @@ public class demoController extends BaseController{
 	public void demo4(@RouteParam("demo4") String demo4) throws Exception{
 		HttpServletResponse response=MvcPageContextUtil.getResponse();
 		MvcPageUtil.resultJsonToString(response, demo4);
+	}
+	
+	/**
+	 * 参数第种方式
+	* <p>Title: </p> 
+	* <p>URL:http://127.0.0.1:8080/demo/demo/demo7.html?demo=3&demo1=4 </p> 
+	* @param demo
+	* @throws Exception
+	 */
+	@Route(value="/demo7.html")
+	@MethodType(type=mType.get)
+	public void demo7(@QueryParam("demo") JSONObject demo) throws Exception{
+		HttpServletResponse response=MvcPageContextUtil.getResponse();
+		MvcPageUtil.resultJsonToString(response, demo.toJSONString());
 	}
 }

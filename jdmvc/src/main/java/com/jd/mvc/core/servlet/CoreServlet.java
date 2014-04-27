@@ -67,7 +67,7 @@ public   class CoreServlet extends HttpServlet {
     	String method = req.getMethod().toLowerCase();
 		String pathInfo = req.getServletPath();
 		IBaseCoreMvcService coreMvcService=new BaseCoreMvcServiceImpl();
-		routeInfos=cache.get("mvc_roteinfo");
+		routeInfos=cache.getSilent("mvc_roteinfo");
 		String reult="";
 		try {
 		ConcurrentHashMap<String,Object> map = coreMvcService.isRouteInfos(routeInfos,pathInfo,method);

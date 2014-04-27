@@ -42,6 +42,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jd.mvc.core.exception.ConversionTypeException;
 import com.jd.mvc.core.exception.UnknownException;
 import com.jd.mvc.core.exception.UploadFileException;

@@ -4,8 +4,10 @@ import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +16,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.servlet.http.HttpServletRequest;
+
+import com.alibaba.fastjson.JSONObject;
 import com.jd.mvc.common.RouteInfo;
 import com.jd.mvc.controller.annotation.FormParam;
 import com.jd.mvc.controller.annotation.MethodType;
@@ -53,9 +57,10 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 			//循环获取所有的方法 除了 Result_JsonTxt或者Result_JsonFile方法
 			for(int i = 0;i < methods.length;i ++ ){
 				Method m = methods[i];
-				if( ! "Result_JsonTxt".equalsIgnoreCase(m.getName()) || ! "Result_JsonFile".equalsIgnoreCase(m.getName()) || ! "ForwardPage".equalsIgnoreCase(m.getName())){
+				if( !Modifier.isStatic(m.getModifiers())&&! "Result_JsonTxt".equalsIgnoreCase(m.getName()) && ! "Result_JsonFile".equalsIgnoreCase(m.getName()) && ! "ForwardPage".equalsIgnoreCase(m.getName())){
 					methodList.add(m);
 				}
+				
 			}
 			for(Method method:methodList){
 				if(method.isAnnotationPresent(Route.class)){
@@ -218,9 +223,27 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 						if("FormParam".equals(annotation.annotationType().getSimpleName())){
 							FormParam param = (FormParam) annotation;
 							String pmType = mdTypes[j].toString();
-							if(isMultipartRequest){
+							if(pmType.equals("class com.alibaba.fastjson.JSONObject")&&!isMultipartRequest){
+								if("put".equalsIgnoreCase(method) || "delete".equalsIgnoreCase(method)){
+									JSONObject jsonObject=new JSONObject();
+									for(String key:putParams.keySet()){
+										jsonObject.put(key, putParams.get(key));
+									}
+									objs[j]=jsonObject;
+								}else{
+									Enumeration enu=request.getParameterNames();
+									JSONObject jsonObject=new JSONObject();
+								     while(enu.hasMoreElements()){
+								         String paraName=(String)enu.nextElement();
+								         jsonObject.put(paraName, request.getParameter(paraName));
+								         
+								     } 
+								     objs[j]=jsonObject;
+								}
+								
+							}else if(!pmType.equals("class com.alibaba.fastjson.JSONObject")&&isMultipartRequest){
 								objs[j] = MvcPageUtil.createObjectByParamType(pmType,multipartParams.get(param.value()));
-							}else{
+							}else if(!pmType.equals("class com.alibaba.fastjson.JSONObject")&&!isMultipartRequest){
 								if("put".equalsIgnoreCase(method) || "delete".equalsIgnoreCase(method)){
 									objs[j] = MvcPageUtil.createObjectByParamType(pmType,putParams.get(param.value()));
 								}else{
@@ -230,9 +253,27 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 						}else if("QueryParam".equals(annotation.annotationType().getSimpleName())){
 							QueryParam param = (QueryParam) annotation;
 							String pmType = mdTypes[j].toString();
-							if(isMultipartRequest){
+							if(pmType.equals("class com.alibaba.fastjson.JSONObject")&&!isMultipartRequest){
+								if("put".equalsIgnoreCase(method) || "delete".equalsIgnoreCase(method)){
+									JSONObject jsonObject=new JSONObject();
+									for(String key:putParams.keySet()){
+										jsonObject.put(key, putParams.get(key));
+									}
+									objs[j]=jsonObject;
+								}else{
+									Enumeration enu=request.getParameterNames();
+									JSONObject jsonObject=new JSONObject();
+								     while(enu.hasMoreElements()){
+								         String paraName=(String)enu.nextElement();
+								         jsonObject.put(paraName, request.getParameter(paraName));
+								         
+								     } 
+								     objs[j]=jsonObject;
+								}
+								
+							}else if(!pmType.equals("class com.alibaba.fastjson.JSONObject")&&isMultipartRequest){
 								objs[j] = MvcPageUtil.createObjectByParamType(pmType,MvcPageUtil.urlDecoder(multipartParams.get(param.value()),charset));
-							}else{
+							}else if(!pmType.equals("class com.alibaba.fastjson.JSONObject")&&!isMultipartRequest){
 								if("put".equalsIgnoreCase(method) || "delete".equalsIgnoreCase(method)){
 									objs[j] = MvcPageUtil.createObjectByParamType(pmType,MvcPageUtil.urlDecoder(putParams.get(param.value()),charset));
 								}else{
@@ -243,6 +284,9 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 							RouteParam param = (RouteParam) annotation;
 							String val = MvcPageUtil.getMapValue(routeInfo.getParams(),MvcPageUtil.addBigBrackets(param.value()));
 							String pmType = mdTypes[j].toString();
+							if(pmType.equals("class com.alibaba.fastjson.JSONObject")){
+								throw new Exception("RouteParam时，禁止用JSONobject作为参数");
+							}
 							objs[j] = MvcPageUtil.createObjectByParamType(pmType,MvcPageUtil.urlDecoder(val,charset));
 						}
 					}
