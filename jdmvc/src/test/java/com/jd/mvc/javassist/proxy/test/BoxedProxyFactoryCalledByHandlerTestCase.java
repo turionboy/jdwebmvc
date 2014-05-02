@@ -8,6 +8,7 @@ import org.junit.Test;
 import com.jd.mvc.core.proxy.ProxyFactory;
 import com.jd.mvc.javassist.proxy.support.BoxedClass;
 import com.jd.mvc.javassist.proxy.support.HandlerCallingTarget;
+import com.jd.mvc.javassist.proxy.support.IBox;
 
 public class BoxedProxyFactoryCalledByHandlerTestCase {
     
@@ -15,7 +16,7 @@ public class BoxedProxyFactoryCalledByHandlerTestCase {
     public void testBooleanMethod() throws Exception {
         BoxedClass target = new BoxedClass();
         HandlerCallingTarget<BoxedClass> handler = new HandlerCallingTarget<BoxedClass>(target, new Object[] {false});
-        BoxedClass proxy = ProxyFactory.createProxy(BoxedClass.class, handler);
+        IBox proxy = ProxyFactory.createProxy(BoxedClass.class, handler);
         
         assertFalse(proxy.testBoolean(true));
         assertEquals("testBoolean", handler.m.getName());

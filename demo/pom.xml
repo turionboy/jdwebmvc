@@ -17,7 +17,7 @@
     <dependency>
      <groupId>com.jd</groupId>
 	 <artifactId>jdmvc</artifactId>
-	 <version>1.0</version>
+	 <version>1.0.1</version>
     </dependency>
   </dependencies>
   <build>

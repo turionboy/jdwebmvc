@@ -9,7 +9,7 @@ public class demoInterceptot implements DefaultInterceptot{
 	@Override
 	public Boolean preInterceptot(Class<?> cls,String routepath, Method method, Object... params) {
 		// TODO Auto-generated method stub
-		System.out.println(cls+"------"+method+"--------"+routepath+"------"+params);
+		//System.out.println(cls+"------"+method+"--------"+routepath+"------"+params);
 		return true;
 	}
 

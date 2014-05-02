@@ -1,8 +1,10 @@
 package com.jd.mvc.common;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("serial")
 public class RouteInfo implements Serializable{
@@ -12,8 +14,9 @@ public class RouteInfo implements Serializable{
 	private String method;
 	private String callMethod;
 	private Object[] objs;
-	private List<Map<String,String>> params;
-	
+	private Map<String, Object> params;
+	private Class<?> interceptor;
+	private Method[] methods;
 	public RouteInfo(){
 		
 	}
@@ -58,11 +61,11 @@ public class RouteInfo implements Serializable{
 		this.objs = objs;
 	}
 
-	public List<Map<String, String>> getParams() {
+	public Map<String, Object> getParams() {
 		return params;
 	}
 
-	public void setParams(List<Map<String, String>> params) {
+	public void setParams(Map<String, Object> params) {
 		this.params = params;
 	}
 
@@ -72,6 +75,22 @@ public class RouteInfo implements Serializable{
 
 	public void setCallMethod(String callMethod) {
 		this.callMethod = callMethod;
+	}
+
+	public Class<?> getInterceptor() {
+		return interceptor;
+	}
+
+	public void setInterceptor(Class<?> interceptor) {
+		this.interceptor = interceptor;
+	}
+
+	public Method[] getMethods() {
+		return methods;
+	}
+
+	public void setMethods(Method[] methods) {
+		this.methods = methods;
 	}
 	
 }

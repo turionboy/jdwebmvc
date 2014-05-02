@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,7 +43,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 
-import com.alibaba.fastjson.JSONObject;
 import com.jd.mvc.core.exception.ConversionTypeException;
 import com.jd.mvc.core.exception.UnknownException;
 import com.jd.mvc.core.exception.UploadFileException;
@@ -62,7 +62,7 @@ public class MvcPageUtil{
 	 * @param key
 	 * @return
 	 */
-	public static String getMapValue(List<Map<String,String>> maps,String key){
+	public static String getMapValue(List<ConcurrentHashMap<String,String>> maps,String key){
 		String val = null;
 		for(Map<String,String> m:maps){
 			String v = m.get(key);

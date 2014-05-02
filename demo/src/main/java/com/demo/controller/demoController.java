@@ -1,9 +1,8 @@
 package com.demo.controller;
 
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
-
-import com.alibaba.fastjson.JSONObject;
 import com.demo.interceptot.demoInterceptot;
 import com.jd.mvc.controller.action.BaseController;
 import com.jd.mvc.controller.annotation.MethodType;
@@ -43,9 +42,9 @@ public class demoController extends BaseController{
 	 */
 	@Route(value="/{demo2}/demo2.html")
 	@MethodType(type=mType.get)
-	public void demo2(@RouteParam("demo2") String demo2) throws Exception{
+	public void demo2(@RouteParam("demo2") Map<String, Object> demo2) throws Exception{
 		HttpServletResponse response=MvcPageContextUtil.getResponse();
-		MvcPageUtil.resultJsonToString(response, demo2);
+		MvcPageUtil.resultJsonToString(response, demo2.get("demo2")+"");
 	}
 	/**
 	 * 参数第种方式
@@ -80,11 +79,11 @@ public class demoController extends BaseController{
 	* @param demo4
 	* @throws Exception
 	 */
-	@Route(value="/demo4/sa/{demo4}.html",cls=demoInterceptot.class)
+	@Route(value="/demo4/{sa}/{demo4}.html",cls=demoInterceptot.class)
 	@MethodType(type=mType.get)
-	public void demo4(@RouteParam("demo4") String demo4) throws Exception{
+	public void demo4(@RouteParam("demo4") Map<String, Object> demo4) throws Exception{
 		HttpServletResponse response=MvcPageContextUtil.getResponse();
-		MvcPageUtil.resultJsonToString(response, demo4);
+		MvcPageUtil.resultJsonToString(response, demo4.get("demo4")+"");
 	}
 	
 	/**
@@ -96,8 +95,23 @@ public class demoController extends BaseController{
 	 */
 	@Route(value="/demo7.html")
 	@MethodType(type=mType.get)
-	public void demo7(@QueryParam("demo") JSONObject demo) throws Exception{
+	public void demo7(@QueryParam("demo") Map<String,Object[]> demo) throws Exception{
 		HttpServletResponse response=MvcPageContextUtil.getResponse();
-		MvcPageUtil.resultJsonToString(response, demo.toJSONString());
+		MvcPageUtil.resultJsonToString(response, demo.get("demo")[0]+"");
+		//trans
+	}
+	/**
+	 * 第7种方式
+	* <p>Title: </p> 
+	* <p>Description: </p> 
+	* @param demo
+	* @return
+	* @throws Exception
+	 */
+	@Route(value="/demo10.html")
+	@MethodType(type=mType.get)
+	public String demo10(@QueryParam("demo") String demo) throws Exception{
+		//HttpServletResponse response=MvcPageContextUtil.getResponse();
+		return MvcPageContextUtil.getRequest().getContextPath()+"/index.jsp";
 	}
 }

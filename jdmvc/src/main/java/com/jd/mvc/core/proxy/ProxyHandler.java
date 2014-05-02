@@ -6,12 +6,6 @@ import java.lang.reflect.Method;
 import com.jd.mvc.core.proxy.MethodInformationCache.MethodInformation;
 
 
-/**
- * Provide a subclass of this to handle proxy calls.
- * 
- * @author <a href="kabir.khan@jboss.com">Kabir Khan</a>
- * @version $Revision: 1.1 $
- */
 public abstract class ProxyHandler<T> {
 
     private final T instance;

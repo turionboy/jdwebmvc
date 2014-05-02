@@ -7,23 +7,22 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.servlet.http.HttpServletRequest;
-
-import com.alibaba.fastjson.JSONObject;
 import com.jd.mvc.common.RouteInfo;
 import com.jd.mvc.controller.annotation.FormParam;
 import com.jd.mvc.controller.annotation.MethodType;
 import com.jd.mvc.controller.annotation.QueryParam;
 import com.jd.mvc.controller.annotation.Route;
-import com.jd.mvc.controller.annotation.RouteParam;
 import com.jd.mvc.core.interceptot.DefaultInterceptot;
 import com.jd.mvc.core.service.IBaseCoreMvcService;
 import com.jd.mvc.core.util.MvcPageContextUtil;
@@ -37,8 +36,7 @@ import com.jd.mvc.core.util.StringUtil;
  *
  */
 public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
-	
-
+	//private static final Map<Class<?>, Method[]> CACHE = Collections.synchronizedMap(new WeakHashMap<Class<?>, Method[]>());
 	public ConcurrentLinkedQueue<RouteInfo> getRouteInfos(String packageDir, String filters) {
 		// TODO Auto-generated method stub
 		//ConcurrentLinkedQueue<E>
@@ -50,9 +48,7 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 		// 递归扫描包 下符合自定义过滤规则的类
 		Set<Class<?>> clazzList = handler.getPkgClassAll(packageDir,true);
 		for(Class<?> clazz:clazzList){
-
 			Method[] methods = clazz.getMethods();
-
 			List<Method> methodList = new ArrayList<Method>();
 			//循环获取所有的方法 除了 Result_JsonTxt或者Result_JsonFile方法
 			for(int i = 0;i < methods.length;i ++ ){
@@ -60,7 +56,6 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 				if( !Modifier.isStatic(m.getModifiers())&&! "Result_JsonTxt".equalsIgnoreCase(m.getName()) && ! "Result_JsonFile".equalsIgnoreCase(m.getName()) && ! "ForwardPage".equalsIgnoreCase(m.getName())){
 					methodList.add(m);
 				}
-				
 			}
 			for(Method method:methodList){
 				if(method.isAnnotationPresent(Route.class)){
@@ -68,6 +63,7 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 					Route pathMethod = method.getAnnotation(Route.class);
 					if(null != pathMethod){
 						routeInfo.setClazz(clazz.getName());
+						routeInfo.setMethods(clazz.getMethods());
 						routeInfo.setMethod(method.getName());
 						boolean boo = clazz.isAnnotationPresent(Route.class);
 						Route pathClazz = null;
@@ -77,11 +73,13 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 						String path = ((null != pathClazz)?MvcPageUtil.deleteRightBar(pathClazz.value()):"") + MvcPageUtil.deleteRightBar(pathMethod.value());
 						routeInfo.setRoute(path.trim());
 						routeInfo.setRouteLength(path.split("/").length);
+						routeInfo.setInterceptor(pathClazz.cls());
 					}
 					MethodType methodType = method.getAnnotation(MethodType.class);
 					if(null != methodType){
 						routeInfo.setCallMethod(methodType.type().toString());
 					}
+					
 					routeInfos.add(routeInfo);
 				}
 			}
@@ -100,78 +98,45 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 			String route, String methodType) throws Exception{
 		// TODO Auto-generated method stub
 		ConcurrentHashMap<String,Object> map = new ConcurrentHashMap<String,Object>();
-		//ConcurrentHashMap<String, Object>
-		LinkedList<RouteInfo> ris = new LinkedList<RouteInfo>();
-		LinkedList<RouteInfo> ris_2 = new LinkedList<RouteInfo>();
 		String inUrl = MvcPageUtil.deleteRightBar(route);
 		String[] inUrls = inUrl.split("/");
 		int inUrlsLen = inUrls.length;
 		for(RouteInfo routeInfo:routeInfos){
 			if(!routeInfo.getRoute().contains("{")&&!routeInfo.getRoute().contains("}")){
-				if(routeInfo.getRoute().equals(inUrl)&&routeInfo.getCallMethod().equalsIgnoreCase(methodType)){
-					ris_2.add(routeInfo);
+				if(routeInfo.getRoute().equals(inUrl)&&routeInfo.getCallMethod().equalsIgnoreCase(methodType)){//没有URL作为参数匹配
+					map.put("isRouteInfos",true);
+					map.put("routeInfo",routeInfo);
+					return map;
 				}
 			}else{
-				if(routeInfo.getRouteLength() == inUrlsLen&&routeInfo.getCallMethod().equalsIgnoreCase(methodType)){
-					ris_2.add(routeInfo);
+				if(routeInfo.getRoute().contains("{")&&routeInfo.getRoute().contains("}")&&routeInfo.getRouteLength() == inUrlsLen&&routeInfo.getCallMethod().equalsIgnoreCase(methodType)){
+					String[] mUrls = MvcPageUtil.deleteRightBar(routeInfo.getRoute()).split("/");
+					Map<String, Object> params=new HashMap<String, Object>();
+					List<String> results=new ArrayList<String>();
+					for(int i=0;i<mUrls.length;i++){
+						if(!mUrls[i].equals(inUrls[i])){
+							if(mUrls[i].contains(".")&&mUrls[i].contains("{")&&mUrls[i].contains("}")){//{demo}.html
+								String value=inUrls[i].substring(0, inUrls[i].indexOf("."));
+								String key=mUrls[i].substring(mUrls[i].indexOf("{")+1, mUrls[i].indexOf("}"));
+								params.put(key, value);
+							}else if(!mUrls[i].contains(".")&&mUrls[i].contains("{")&&mUrls[i].contains("}")){
+								params.put(mUrls[i].substring(1, mUrls[i].length()-1),MvcPageUtil.deleteBigBrackets(inUrls[i]));
+							}
+							results.add(mUrls[i]);
+						}
+					}
+					if(params.keySet().size()==results.size()){
+						routeInfo.setParams(params);
+						map.put("isRouteInfos",true);
+						map.put("routeInfo",routeInfo);
+						return map;
+					}	
 				}
 			}
 			
 		}
-		if(StringUtil.isNullOrEmpty(ris_2)||ris_2.size()==0){
-			throw new Exception("none one exist");
-		}else if(ris_2.size()>1){
-			throw new Exception("more than one exist");
-		}
-		for(int i = 0;i < ris_2.size();i ++ ){
-			List<Map<String,String>> routes = new ArrayList<Map<String,String>>();
-			List<Map<String,String>> params = new ArrayList<Map<String,String>>();
-			RouteInfo routeInfo = ris_2.get(i);
-
-			String[] mUrls = MvcPageUtil.deleteRightBar(routeInfo.getRoute()).split("/");
-
-			for(int j = 1;j < mUrls.length;j ++ ){
-				if( ! mUrls[j].equalsIgnoreCase(inUrls[j])){
-					String sUrlLeft = mUrls[j].substring(0,1);
-					String sUrlRight = mUrls[j].substring(mUrls[j].length() - 1,mUrls[j].length());
-					if(sUrlLeft.equalsIgnoreCase("{") && sUrlRight.equalsIgnoreCase("}")){//例子:{demo2}/demo2.html
-						Map<String,String> paramMap = new HashMap<String,String>();
-						paramMap.put(mUrls[j].toString(),MvcPageUtil.deleteBigBrackets(inUrls[j].toString()));
-						params.add(paramMap);
-					}else if(sUrlLeft.equalsIgnoreCase("{") &&!sUrlRight.equalsIgnoreCase("}")&&mUrls[j].toString().substring(mUrls[j].toString().indexOf("}")+1, mUrls[j].toString().indexOf("}")+2).equals(".")){//例子:/{demo2}.html
-						Map<String,String> paramMap = new HashMap<String,String>();
-						String value=inUrls[j].toString().substring(0, inUrls[j].toString().indexOf("."));
-						String key=mUrls[j].toString().substring(mUrls[j].toString().indexOf("{"), mUrls[j].toString().indexOf("}")+1);
-						paramMap.put(key, value);
-						params.add(paramMap);
-					}
-				}else{
-					Map<String,String> routeMap = new HashMap<String,String>();
-					routeMap.put(inUrls[j],mUrls[j]);
-					routes.add(routeMap);
-				}
-				routeInfo.setParams(params);
-			}
-
-			int sunParam = routes.size() + params.size();
-
-			if(inUrlsLen - 1 == sunParam){
-				ris.add(routeInfo);
-			}
-		}
-		if(!StringUtil.isNullOrEmpty(ris)&&ris.size() == 1){
-			if(ris.get(0).getCallMethod().equalsIgnoreCase(methodType)){
-				map.put("isRouteInfos",true);
-				map.put("routeInfo",ris.get(0));
-			}else{
-				map.put("isRouteInfos",false);
-				map.put("routeInfo",null);
-			}
-		}else{
-			map.put("isRouteInfos",false);
-			map.put("routeInfo",null);
-		}
-
+		map.put("isRouteInfos",false);
+		map.put("routeInfo",null);
 		return map;
 	}
 	
@@ -180,27 +145,17 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 			throws Exception {
 		// TODO Auto-generated method stub
 		MvcPageContextUtil easyPageContext = new MvcPageContextUtil();
-		//HttpServletResponse response = easyPageContext.getResponse();
 		HttpServletRequest request = easyPageContext.getRequest();
-
 		String method = request.getMethod();
-
 		String charset = easyPageContext.getCharset();
-
 		Map<String,String> multipartParams = null;
-
 		Map<String,String> putParams = null;
-
 		Object obj = null;
-
 		try{
 			boolean isMultipartRequest = MvcPageUtil.isMultipartRequest(request);
-
 			if(isMultipartRequest){
 				multipartParams = MvcPageUtil.getMultipartParams(request,charset);
-				//multipartParams.putAll(getPutParams(request,charset));
 			}
-
 			if("put".equalsIgnoreCase(method) || "delete".equalsIgnoreCase(method)){
 				if(isMultipartRequest){
 					putParams = multipartParams;
@@ -208,10 +163,9 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 					putParams = getPutParams(request,charset);
 				}
 			}
-
 			Class<?> clazz = MvcPageUtil.getClassByClassLoader(MvcPageUtil.getClassLoader(),routeInfo.getClazz());
-
-			Method[] mds = clazz.getMethods();
+			Method[] mds = routeInfo.getMethods();
+			
 			for(int i = 0;i < mds.length;i ++ ){
 				Method md = mds[i];
 				if(routeInfo.getMethod().equals(md.getName())){
@@ -223,27 +177,16 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 						if("FormParam".equals(annotation.annotationType().getSimpleName())){
 							FormParam param = (FormParam) annotation;
 							String pmType = mdTypes[j].toString();
-							if(pmType.equals("class com.alibaba.fastjson.JSONObject")&&!isMultipartRequest){
+							if(pmType.equals("java.util.Map<java.lang.String, java.lang.Object[]>")&&!isMultipartRequest){
 								if("put".equalsIgnoreCase(method) || "delete".equalsIgnoreCase(method)){
-									JSONObject jsonObject=new JSONObject();
-									for(String key:putParams.keySet()){
-										jsonObject.put(key, putParams.get(key));
-									}
-									objs[j]=jsonObject;
+									objs[j]=putParams;
 								}else{
-									Enumeration enu=request.getParameterNames();
-									JSONObject jsonObject=new JSONObject();
-								     while(enu.hasMoreElements()){
-								         String paraName=(String)enu.nextElement();
-								         jsonObject.put(paraName, request.getParameter(paraName));
-								         
-								     } 
-								     objs[j]=jsonObject;
+								     objs[j]=request.getParameterMap();
 								}
 								
-							}else if(!pmType.equals("class com.alibaba.fastjson.JSONObject")&&isMultipartRequest){
+							}else if(!pmType.equals("java.util.Map<java.lang.String, java.lang.Object[]>")&&isMultipartRequest){
 								objs[j] = MvcPageUtil.createObjectByParamType(pmType,multipartParams.get(param.value()));
-							}else if(!pmType.equals("class com.alibaba.fastjson.JSONObject")&&!isMultipartRequest){
+							}else if(!pmType.equals("java.util.Map<java.lang.String, java.lang.Object[]>")&&!isMultipartRequest){
 								if("put".equalsIgnoreCase(method) || "delete".equalsIgnoreCase(method)){
 									objs[j] = MvcPageUtil.createObjectByParamType(pmType,putParams.get(param.value()));
 								}else{
@@ -253,27 +196,15 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 						}else if("QueryParam".equals(annotation.annotationType().getSimpleName())){
 							QueryParam param = (QueryParam) annotation;
 							String pmType = mdTypes[j].toString();
-							if(pmType.equals("class com.alibaba.fastjson.JSONObject")&&!isMultipartRequest){
+							if(pmType.equals("java.util.Map<java.lang.String, java.lang.Object[]>")&&!isMultipartRequest){
 								if("put".equalsIgnoreCase(method) || "delete".equalsIgnoreCase(method)){
-									JSONObject jsonObject=new JSONObject();
-									for(String key:putParams.keySet()){
-										jsonObject.put(key, putParams.get(key));
-									}
-									objs[j]=jsonObject;
+									objs[j]=putParams;
 								}else{
-									Enumeration enu=request.getParameterNames();
-									JSONObject jsonObject=new JSONObject();
-								     while(enu.hasMoreElements()){
-								         String paraName=(String)enu.nextElement();
-								         jsonObject.put(paraName, request.getParameter(paraName));
-								         
-								     } 
-								     objs[j]=jsonObject;
-								}
-								
-							}else if(!pmType.equals("class com.alibaba.fastjson.JSONObject")&&isMultipartRequest){
+								     objs[j]=request.getParameterMap();
+								}				
+							}else if(!pmType.equals("java.util.Map<java.lang.String, java.lang.Object[]>")&&isMultipartRequest){
 								objs[j] = MvcPageUtil.createObjectByParamType(pmType,MvcPageUtil.urlDecoder(multipartParams.get(param.value()),charset));
-							}else if(!pmType.equals("class com.alibaba.fastjson.JSONObject")&&!isMultipartRequest){
+							}else if(!pmType.equals("java.util.Map<java.lang.String, java.lang.Object[]>")&&!isMultipartRequest){
 								if("put".equalsIgnoreCase(method) || "delete".equalsIgnoreCase(method)){
 									objs[j] = MvcPageUtil.createObjectByParamType(pmType,MvcPageUtil.urlDecoder(putParams.get(param.value()),charset));
 								}else{
@@ -281,13 +212,16 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 								}
 							}
 						}else if("RouteParam".equals(annotation.annotationType().getSimpleName())){
-							RouteParam param = (RouteParam) annotation;
-							String val = MvcPageUtil.getMapValue(routeInfo.getParams(),MvcPageUtil.addBigBrackets(param.value()));
+							//RouteParam param = (RouteParam) annotation;
+							//String val = MvcPageUtil.getMapValue(routeInfo.getParams(),MvcPageUtil.addBigBrackets(param.value()));
 							String pmType = mdTypes[j].toString();
-							if(pmType.equals("class com.alibaba.fastjson.JSONObject")){
-								throw new Exception("RouteParam时，禁止用JSONobject作为参数");
+							if(pmType.equals("java.util.Map<java.lang.String, java.lang.Object>")){
+								objs[j] =routeInfo.getParams() ;
+								
+							}else{
+								throw new Exception("RouteParam时，必须Map作为参数");
 							}
-							objs[j] = MvcPageUtil.createObjectByParamType(pmType,MvcPageUtil.urlDecoder(val,charset));
+							
 						}
 					}
 					Object o = null;
@@ -306,12 +240,7 @@ public  class BaseCoreMvcServiceImpl implements IBaseCoreMvcService{
 						}
 					}
 					Boolean  flag=true;
-					Class<?> interceptorclass=null;
-					if(md.isAnnotationPresent(Route.class)){
-						Route route=md.getAnnotation(Route.class);
-						interceptorclass=route.cls();
-					}
-					
+					Class<?> interceptorclass=routeInfo.getInterceptor();
 					if(!StringUtil.isNullOrEmpty(interceptorclass)&&interceptorclass.newInstance() instanceof DefaultInterceptot){
 						DefaultInterceptot defaultInterceptot=(DefaultInterceptot) interceptorclass.newInstance();
 						if(objs.length>0){
